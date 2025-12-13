@@ -28,8 +28,12 @@ function App() {
   // Preload all audio files on app start
   useEffect(() => {
     const doPreload = async () => {
-      await preloadAll();
-      // Small delay for smooth transition
+      try {
+        await preloadAll();
+      } catch (e) {
+        console.error("Preload failed:", e);
+      }
+      // Always transition to main app
       setTimeout(() => setIsLoading(false), 300);
     };
     doPreload();
