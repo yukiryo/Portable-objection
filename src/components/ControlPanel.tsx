@@ -1,22 +1,6 @@
 import { motion } from "framer-motion";
+import React from "react";
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            'meting-js': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
-                server?: string;
-                type?: string;
-                id?: string;
-                fixed?: string;
-                loop?: string;
-                order?: string;
-                preload?: string;
-                'list-folded'?: string;
-                'list-max-height'?: string;
-            }, HTMLElement>;
-        }
-    }
-}
 import { CHARACTERS, VOICES } from "../data";
 import { cn } from "../lib/utils";
 
@@ -289,7 +273,7 @@ function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
             {/* Dropdown Options */}
             {isOpen && (
                 <div className="absolute top-full left-0 w-full max-h-60 overflow-y-auto z-50 bg-slate-100 dark:bg-slate-800 border border-t-0 border-blue-500/30 rounded-b-lg shadow-xl scrollbar-hide">
-                    {options.map((opt, idx) => {
+                    {options.map((opt) => {
                         if ('group' in opt) {
                             return (
                                 <div key={opt.group}>
@@ -341,4 +325,4 @@ function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
     );
 }
 
-import React from 'react';
+

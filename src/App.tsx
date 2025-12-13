@@ -16,7 +16,6 @@ function App() {
   const cooldownRef = useRef(false); // Ref for synchronous access in event listeners
 
   const [triggerCount, setTriggerCount] = useState(0);
-  const [isInCooldown, setIsInCooldown] = useState(false);
   const [maxAcceleration, setMaxAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [autoMusic, setAutoMusic] = useState(() => localStorage.getItem('igiari_autom') === 'true');
 
@@ -77,7 +76,6 @@ function App() {
 
     // 1. Lock
     cooldownRef.current = true;
-    setIsInCooldown(true); // For UI updates if needed
 
     // 2. Play Sound
     const path = `sound/${selectedCharId}/${selectedVoiceId}.mp3`;
@@ -102,7 +100,6 @@ function App() {
     // 6. Unlock after delay
     setTimeout(() => {
       cooldownRef.current = false;
-      setIsInCooldown(false);
     }, 1300);
 
   }, [selectedCharId, selectedVoiceId, playSound, autoMusic]);
