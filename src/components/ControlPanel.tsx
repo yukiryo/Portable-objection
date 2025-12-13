@@ -219,6 +219,17 @@ export function ControlPanel({
             <div className="mt-2 text-[10px] text-center text-slate-400">
                 双击空白区域可隐藏/显示控制面板。<br />
                 Refactored by <a href="https://t.me/Yukiryo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 transition-colors font-bold">雪凌Yukiryo</a>
+                <br />
+                <a
+                    href={`https://github.com/yukiryo/Portable-objection/commit/${__COMMIT_FULL_HASH__}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-500 hover:text-slate-600 transition-colors font-mono"
+                >
+                    {__COMMIT_HASH__}
+                </a>
+                {' · '}
+                {new Date(__COMMIT_DATE__).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}
             </div>
 
         </div>
