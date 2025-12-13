@@ -5,6 +5,7 @@ import { useAudioCache } from './hooks/useAudioCache';
 import { useDeviceMotion } from './hooks/useDeviceMotion';
 import { ControlPanel } from './components/ControlPanel';
 import { ObjectionDisplay } from './components/ObjectionDisplay';
+import { LoadingScreen } from './components/LoadingScreen';
 
 function App() {
   // --- State ---
@@ -14,19 +15,31 @@ function App() {
   const [isUIHidden, setIsUIHidden] = useState(false);
   const [isMouseMode, setIsMouseMode] = useState(false);
   const cooldownRef = useRef(false); // Ref for synchronous access in event listeners
+  const [isLoading, setIsLoading] = useState(true);
 
   const [triggerCount, setTriggerCount] = useState(0);
   const [maxAcceleration, setMaxAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [autoMusic, setAutoMusic] = useState(() => localStorage.getItem('igiari_autom') === 'true');
 
   // --- Hooks ---
-  const { playSound, clearCache, preloadAll } = useAudioCache();
+  const { playSound, clearCache, preloadAll, preloadProgress } = useAudioCache();
   const { isShaking, acceleration, requestPermission, permissionGranted } = useDeviceMotion(threshold);
 
   // Preload all audio files on app start
   useEffect(() => {
-    preloadAll();
+    const doPreload = async () => {
+      await preloadAll();
+      // Small delay for smooth transition
+      setTimeout(() => setIsLoading(false), 300);
+    };
+    doPreload();
   }, [preloadAll]);
+
+  // Show loading screen while preloading
+  if (isLoading) {
+    return <LoadingScreen progress={preloadProgress} />;
+  }
+
 
   // --- Logic ---
   const handleCharChange = (id: string) => {
