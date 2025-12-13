@@ -72,36 +72,28 @@ function App() {
   }, []);
 
   const executeObjection = useCallback(() => {
-    if (cooldownRef.current) return;
-
-    // 1. Lock
-    cooldownRef.current = true;
-
-    // 2. Play Sound
+    // 1. Play Sound (reuses same audio element, auto-stops previous)
     const path = `sound/${selectedCharId}/${selectedVoiceId}.mp3`;
     playSound(path);
 
-    // 3. Trigger Visual
+    // 2. Trigger Visual
     setTriggerCount(c => c + 1);
 
-    // 4. Vibrate
+    // 3. Vibrate
     if (navigator.vibrate) navigator.vibrate(200);
 
-    // 5. Auto Music
-    if (autoMusic) {
+    // 4. Auto Music (only trigger on first shake, not repeated)
+    if (autoMusic && !cooldownRef.current) {
+      cooldownRef.current = true;
       setTimeout(() => {
         const meting = document.querySelector("meting-js") as any;
         if (meting && meting.aplayer) {
           meting.aplayer.play();
         }
-      }, 800); // 800ms delay to let the Shout finish
+        // Reset after music started
+        setTimeout(() => { cooldownRef.current = false; }, 5000);
+      }, 800);
     }
-
-    // 6. Unlock after delay
-    setTimeout(() => {
-      cooldownRef.current = false;
-    }, 1300);
-
   }, [selectedCharId, selectedVoiceId, playSound, autoMusic]);
 
   // Motion Trigger
@@ -159,10 +151,14 @@ function App() {
       onDoubleClick={handleDoubleClick}
     >
       {/* Background decoration or info */}
-      <div className="absolute top-8 left-0 w-full text-center pointer-events-none z-0 flex flex-col items-center justify-center">
+      <div className={cn(
+        "absolute top-8 left-0 w-full text-center pointer-events-none z-0 flex flex-col items-center justify-center",
+        "transition-all duration-500",
+        isUIHidden ? "opacity-0 -translate-y-10" : "opacity-100 translate-y-0"
+      )}>
         <div className="flex items-center justify-center gap-3">
           <img src="img/badge.png" className="h-8 w-auto object-contain drop-shadow-md" alt="Badge" />
-          <h1 className="text-2xl md:text-3xl font-black tracking-[0.2em] uppercase bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
+          <h1 className="text-2xl md:text-3xl font-black tracking-[0.2em] uppercase bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
             随身异议
           </h1>
         </div>

@@ -54,10 +54,10 @@ export function ObjectionDisplay({ imageSrc, triggerShake, onShakeComplete }: Ob
 
     return (
         <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-[110]">
-            <AnimatePresence>
+            <AnimatePresence mode="popLayout">
                 {isShaking && (
                     <motion.img
-                        key={imageSrc}
+                        key={triggerShake}
                         src={imageSrc}
                         alt="Objection"
                         className="w-full max-w-[700px] object-contain drop-shadow-2xl"
