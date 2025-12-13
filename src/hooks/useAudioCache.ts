@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { CHARACTERS } from '../data';
 
 type CacheStatus = 'idle' | 'loading' | 'cached' | 'error';
@@ -59,9 +59,10 @@ export function useAudioCache() {
         if (!buffer) {
             // Not in memory, fetch and decode
             setStatus('loading');
-            buffer = await fetchAndDecode(path);
-            if (buffer) {
-                audioBufferCache.set(path, buffer);
+            const decoded = await fetchAndDecode(path);
+            if (decoded) {
+                audioBufferCache.set(path, decoded);
+                buffer = decoded;
             }
         }
 
