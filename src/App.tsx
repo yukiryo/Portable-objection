@@ -20,7 +20,7 @@ function App() {
   const [autoMusic, setAutoMusic] = useState(() => localStorage.getItem('igiari_autom') === 'true');
 
   // --- Hooks ---
-  const { playSound, clearCache, preloadAll, preloadProgress } = useAudioCache();
+  const { playSound, clearCache, preloadAll } = useAudioCache();
   const { isShaking, acceleration, requestPermission, permissionGranted } = useDeviceMotion(threshold);
 
   // Preload all audio files on app start
