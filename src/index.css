@@ -65,6 +65,9 @@ meting-js {
   /* Remove vertical padding, keep horizontal */
   margin: 0 !important;
   flex: 1;
+  min-width: 0 !important;
+  /* Allow flex item to shrink below its content size */
+  overflow: hidden !important;
 }
 
 .aplayer .aplayer-info .aplayer-music {
@@ -78,6 +81,11 @@ meting-js {
   font-weight: bold;
   font-size: 14px !important;
   line-height: 1.2 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  max-width: 100% !important;
 }
 
 .dark .aplayer .aplayer-info .aplayer-music .aplayer-title {
