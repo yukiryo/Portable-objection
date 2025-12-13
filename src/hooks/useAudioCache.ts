@@ -1,82 +1,93 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { CHARACTERS } from '../data';
 
 type CacheStatus = 'idle' | 'loading' | 'cached' | 'error';
 
+// Global AudioContext (created once, reused)
+let audioContext: AudioContext | null = null;
+
+// In-memory cache for decoded AudioBuffers
+const audioBufferCache = new Map<string, AudioBuffer>();
+
 export function useAudioCache() {
     const [status, setStatus] = useState<CacheStatus>('idle');
     const [preloadProgress, setPreloadProgress] = useState<number>(0);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-    const getCacheKey = (path: string) => `cachedMP3_${path}`;
-
-    const playSound = useCallback(async (path: string) => {
-        // Create audio element once and reuse it
-        if (!audioRef.current) {
-            audioRef.current = new Audio();
+    // Initialize AudioContext on first user interaction (required by browsers)
+    const getAudioContext = useCallback(() => {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         }
-
-        const audio = audioRef.current;
-
-        // Stop and reset if already playing
-        audio.pause();
-        audio.currentTime = 0;
-
-        const cacheKey = getCacheKey(path);
-        const cachedBase64 = localStorage.getItem(cacheKey);
-
-        const playAudio = (src: string) => {
-            audio.src = src;
-            audio.play().catch(e => console.error("Play failed", e));
-            setStatus('cached');
-        };
-
-        if (cachedBase64) {
-            playAudio(cachedBase64);
-            return;
+        // Resume if suspended (browsers require user gesture)
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
         }
-
-        // Fetch and cache
-        setStatus('loading');
-        try {
-            const response = await fetch(path);
-            const blob = await response.blob();
-
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                const base64data = reader.result as string;
-                try {
-                    localStorage.setItem(cacheKey, base64data);
-                    playAudio(base64data);
-                } catch (e) {
-                    console.error("Storage full or error", e);
-                    playAudio(base64data);
-                }
-            };
-        } catch (e) {
-            console.error("Fetch failed", e);
-            setStatus('error');
-        }
+        return audioContext;
     }, []);
 
-    const clearCache = useCallback(() => {
-        const keysToRemove: string[] = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('cachedMP3_')) {
-                keysToRemove.push(key);
+    // Fetch and decode a single audio file
+    const fetchAndDecode = useCallback(async (path: string): Promise<AudioBuffer | null> => {
+        try {
+            const response = await fetch(path);
+            const arrayBuffer = await response.arrayBuffer();
+            const ctx = getAudioContext();
+            const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+            return audioBuffer;
+        } catch (e) {
+            console.error(`Failed to fetch/decode ${path}`, e);
+            return null;
+        }
+    }, [getAudioContext]);
+
+    const playSound = useCallback(async (path: string) => {
+        const ctx = getAudioContext();
+
+        // Stop previous sound if playing
+        if (currentSourceRef.current) {
+            try {
+                currentSourceRef.current.stop();
+            } catch (e) {
+                // Ignore if already stopped
+            }
+            currentSourceRef.current = null;
+        }
+
+        // Check in-memory cache first
+        let buffer = audioBufferCache.get(path);
+
+        if (!buffer) {
+            // Not in memory, fetch and decode
+            setStatus('loading');
+            buffer = await fetchAndDecode(path);
+            if (buffer) {
+                audioBufferCache.set(path, buffer);
             }
         }
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+
+        if (buffer) {
+            // Create source and play immediately
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(ctx.destination);
+            source.start(0);
+            currentSourceRef.current = source;
+            setStatus('cached');
+        } else {
+            setStatus('error');
+        }
+    }, [getAudioContext, fetchAndDecode]);
+
+    const clearCache = useCallback(() => {
+        audioBufferCache.clear();
         setStatus('idle');
     }, []);
 
     const isCached = useCallback((path: string) => {
-        return !!localStorage.getItem(getCacheKey(path));
+        return audioBufferCache.has(path);
     }, []);
 
-    // Preload all audio files for all characters
+    // Preload all audio files for all characters into memory
     const preloadAll = useCallback(async () => {
         // Collect all unique audio paths
         const allPaths: string[] = [];
@@ -89,41 +100,32 @@ export function useAudioCache() {
             }
         }
 
-        // Filter out already cached
-        const uncachedPaths = allPaths.filter(p => !localStorage.getItem(getCacheKey(p)));
+        // Filter out already cached in memory
+        const uncachedPaths = allPaths.filter(p => !audioBufferCache.has(p));
 
         if (uncachedPaths.length === 0) {
             setPreloadProgress(100);
             return;
         }
 
-        let loaded = 0;
-        for (const path of uncachedPaths) {
-            try {
-                const response = await fetch(path);
-                const blob = await response.blob();
-                const reader = new FileReader();
+        // Initialize audio context
+        getAudioContext();
 
-                await new Promise<void>((resolve) => {
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = () => {
-                        const base64data = reader.result as string;
-                        try {
-                            localStorage.setItem(getCacheKey(path), base64data);
-                        } catch (e) {
-                            console.warn("Storage full, stopping preload", e);
-                        }
-                        resolve();
-                    };
-                });
-            } catch (e) {
-                console.warn(`Failed to preload ${path}`, e);
-            }
-            loaded++;
-            setPreloadProgress(Math.round((loaded / uncachedPaths.length) * 100));
+        let loaded = 0;
+        // Use Promise.all for parallel loading (faster)
+        const batchSize = 5; // Load 5 files at a time
+        for (let i = 0; i < uncachedPaths.length; i += batchSize) {
+            const batch = uncachedPaths.slice(i, i + batchSize);
+            await Promise.all(batch.map(async (path) => {
+                const buffer = await fetchAndDecode(path);
+                if (buffer) {
+                    audioBufferCache.set(path, buffer);
+                }
+                loaded++;
+                setPreloadProgress(Math.round((loaded / uncachedPaths.length) * 100));
+            }));
         }
-    }, []);
+    }, [getAudioContext, fetchAndDecode]);
 
     return { playSound, clearCache, status, isCached, preloadAll, preloadProgress };
 }
-
