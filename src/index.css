@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --font-family-sans: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--color-slate-100);
+  color: var(--color-slate-800);
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--color-slate-900);
+    color: var(--color-slate-100);
+  }
+}
+
+/* Legacy Player overrides */
+meting-js {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Custom APlayer Style overrides for embedding */
+.aplayer {
+  font-family: inherit !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0.75rem !important;
+  background: var(--color-slate-100) !important;
+  border: 1px solid var(--color-slate-200) !important;
+  overflow: hidden !important;
+  /* Fix rounded corners and overflow content */
+}
+
+.dark .aplayer {
+  background: var(--color-slate-800) !important;
+  border-color: var(--color-slate-700) !important;
+  color: var(--color-slate-200) !important;
+}
+
+.aplayer .aplayer-body {
+  background: transparent !important;
+  border-radius: 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  /* Center Pic and Info vertically */
+}
+
+.aplayer .aplayer-pic {
+  height: 66px !important;
+  width: 66px !important;
+}
+
+.aplayer .aplayer-info {
+  border-bottom: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  /* Center content vertically */
+  height: 66px !important;
+  /* Match pic height */
+  padding: 0 10px !important;
+  /* Remove vertical padding, keep horizontal */
+  margin: 0 !important;
+  flex: 1;
+}
+
+.aplayer .aplayer-info .aplayer-music {
+  margin: 0 0 4px 0 !important;
+  /* Small gap below title */
+  padding: 0 !important;
+}
+
+.aplayer .aplayer-info .aplayer-music .aplayer-title {
+  color: var(--color-slate-900) !important;
+  font-weight: bold;
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+}
+
+.dark .aplayer .aplayer-info .aplayer-music .aplayer-title {
+  color: var(--color-slate-50) !important;
+}
+
+.aplayer .aplayer-info .aplayer-music .aplayer-author {
+  color: var(--color-slate-500) !important;
+}
+
+.dark .aplayer .aplayer-info .aplayer-music .aplayer-author {
+  color: var(--color-slate-400) !important;
+}
+
+/* Ensure icons are visible in dark mode */
+.dark .aplayer .aplayer-info .aplayer-controller .aplayer-time {
+  color: var(--color-slate-400) !important;
+}
+
+.dark .aplayer .aplayer-icon path {
+  fill: var(--color-slate-300) !important;
+}
+
+/* Playlist Contrast Fixes */
+.aplayer .aplayer-list ol li {
+  border-top: 1px solid var(--color-slate-200) !important;
+}
+
+.dark .aplayer .aplayer-list ol li {
+  border-top: 1px solid var(--color-slate-700) !important;
+}
+
+.aplayer .aplayer-list ol li:hover {
+  background: var(--color-slate-50) !important;
+}
+
+.dark .aplayer .aplayer-list ol li:hover {
+  background: var(--color-slate-700) !important;
+}
+
+/* Active Item */
+.aplayer .aplayer-list ol li.aplayer-list-light {
+  background: var(--color-slate-200) !important;
+}
+
+.dark .aplayer .aplayer-list ol li.aplayer-list-light {
+  background: var(--color-slate-600) !important;
+}
+
+/* Text Colors in List */
+.aplayer .aplayer-list ol li .aplayer-list-title {
+  color: var(--color-slate-700) !important;
+}
+
+.dark .aplayer .aplayer-list ol li .aplayer-list-title {
+  color: var(--color-slate-200) !important;
+}
+
+.aplayer .aplayer-list ol li .aplayer-list-author {
+  color: var(--color-slate-400) !important;
+}
+
+.dark .aplayer .aplayer-list ol li .aplayer-list-author {
+  color: var(--color-slate-400) !important;
+}
+
+/* Index Number */
+.aplayer .aplayer-list ol li .aplayer-list-index {
+  color: var(--color-slate-400) !important;
+}
+
+.aplayer-lrc {
+  display: none !important;
+  /* Hide lyrics to save space */
+}
