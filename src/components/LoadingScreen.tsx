@@ -78,6 +78,22 @@ export function LoadingScreen({ progress, onEnter }: LoadingScreenProps) {
             >
                 Portable Objection
             </motion.p>
+
+            {/* Hidden music player for early initialization */}
+            <div className="hidden">
+                {/* @ts-ignore */}
+                <meting-js
+                    server="netease"
+                    type="playlist"
+                    id="9487616885"
+                    fixed="false"
+                    loop="one"
+                    order="list"
+                    preload="false"
+                    list-folded="true"
+                    list-max-height="200px"
+                />
+            </div>
         </div>
     );
 }
