@@ -153,7 +153,7 @@ function App() {
         "transition-all duration-500",
         isUIHidden ? "opacity-0 -translate-y-10" : "opacity-100 translate-y-0"
       )}>
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-3 pb-2">
           <img src="img/badge.png" className="h-8 w-auto object-contain drop-shadow-md" alt="Badge" />
           <img src="img/suishenyiyi_title.png" className="h-16 md:h-24 w-auto object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" alt="随身异议" />
         </div>
