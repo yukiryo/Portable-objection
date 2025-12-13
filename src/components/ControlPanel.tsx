@@ -274,8 +274,8 @@ function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
                     "w-full bg-slate-100 dark:bg-slate-800 rounded-lg p-2 text-sm font-medium flex justify-between items-center transition-all",
-                    "border border-transparent hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:outline-none",
-                    isOpen ? "rounded-b-none ring-2 ring-blue-500" : ""
+                    "border border-transparent hover:border-red-400 focus:ring-2 focus:ring-red-500 focus:outline-none",
+                    isOpen ? "rounded-b-none ring-2 ring-red-500" : ""
                 )}
             >
                 <span className="truncate">{selectedOption?.label}</span>
@@ -284,7 +284,7 @@ function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
 
             {/* Dropdown Options */}
             {isOpen && (
-                <div className="absolute top-full left-0 w-full max-h-60 overflow-y-auto z-50 bg-slate-100 dark:bg-slate-800 border border-t-0 border-blue-500/30 rounded-b-lg shadow-xl scrollbar-hide">
+                <div className="absolute top-full left-0 w-full max-h-60 overflow-y-auto z-50 bg-slate-100 dark:bg-slate-800 border border-t-0 border-red-500/30 rounded-b-lg shadow-xl scrollbar-hide">
                     {options.map((opt) => {
                         if ('group' in opt) {
                             return (
@@ -302,8 +302,8 @@ function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
                                             className={cn(
                                                 "p-2 pl-4 text-sm cursor-pointer transition-colors border-l-2 border-transparent",
                                                 item.value === value
-                                                    ? "bg-blue-500 text-white font-bold border-none"
-                                                    : "hover:bg-blue-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 hover:border-blue-400"
+                                                    ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold border-none"
+                                                    : "hover:bg-red-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 hover:border-red-400"
                                             )}
                                         >
                                             {item.label}
@@ -322,8 +322,8 @@ function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
                                     className={cn(
                                         "p-2 text-sm cursor-pointer transition-colors",
                                         opt.value === value
-                                            ? "bg-blue-500 text-white font-bold"
-                                            : "hover:bg-blue-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200"
+                                            ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold"
+                                            : "hover:bg-red-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200"
                                     )}
                                 >
                                     {opt.label}
