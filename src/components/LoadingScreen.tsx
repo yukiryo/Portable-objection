@@ -2,9 +2,12 @@ import { motion } from 'framer-motion';
 
 interface LoadingScreenProps {
     progress: number;
+    onEnter: () => void;
 }
 
-export function LoadingScreen({ progress }: LoadingScreenProps) {
+export function LoadingScreen({ progress, onEnter }: LoadingScreenProps) {
+    const isReady = progress >= 100;
+
     return (
         <div className="fixed inset-0 z-[999] bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center">
             {/* Logo */}
@@ -43,15 +46,28 @@ export function LoadingScreen({ progress }: LoadingScreenProps) {
                 />
             </motion.div>
 
-            {/* Progress Text */}
-            <motion.p
-                className="mt-4 text-slate-400 text-sm font-mono"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-            >
-                {progress < 100 ? `加载音频资源... ${progress}%` : '准备就绪！'}
-            </motion.p>
+            {/* Progress Text or Enter Button */}
+            {isReady ? (
+                <motion.button
+                    onClick={onEnter}
+                    className="mt-6 px-8 py-3 bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold rounded-lg shadow-lg hover:scale-105 transition-transform active:scale-95"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                    点击进入 / Click to Enter
+                </motion.button>
+            ) : (
+                <motion.p
+                    className="mt-4 text-slate-400 text-sm font-mono"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    加载音频资源... {progress}%
+                </motion.p>
+            )}
 
             {/* Subtitle */}
             <motion.p
@@ -65,3 +81,4 @@ export function LoadingScreen({ progress }: LoadingScreenProps) {
         </div>
     );
 }
+

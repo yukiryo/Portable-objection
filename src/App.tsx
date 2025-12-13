@@ -25,24 +25,15 @@ function App() {
   const { playSound, clearCache, preloadAll, preloadProgress } = useAudioCache();
   const { isShaking, acceleration, requestPermission, permissionGranted } = useDeviceMotion(threshold);
 
-  // Preload all audio files on app start
+  // Preload all audio files on app start (will skip AudioContext decode until user clicks)
   useEffect(() => {
-    const doPreload = async () => {
-      try {
-        await preloadAll();
-      } catch (e) {
-        console.error("Preload failed:", e);
-      }
-      // Always transition to main app
-      setTimeout(() => setIsLoading(false), 300);
-    };
-    doPreload();
+    preloadAll().catch(e => console.warn("Preload incomplete:", e));
   }, [preloadAll]);
 
-  // Show loading screen while preloading
-  if (isLoading) {
-    return <LoadingScreen progress={preloadProgress} />;
-  }
+  // Handle user click to enter app (this provides the user gesture for AudioContext)
+  const handleEnterApp = useCallback(() => {
+    setIsLoading(false);
+  }, []);
 
 
   // --- Logic ---
@@ -160,6 +151,12 @@ function App() {
   }, []);
 
   const imageSrc = `img/${selectedVoiceId}.png`;
+
+
+  // Show loading screen while preloading (MUST be after all hooks)
+  if (isLoading) {
+    return <LoadingScreen progress={preloadProgress} onEnter={handleEnterApp} />;
+  }
 
   return (
     <div
