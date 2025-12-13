@@ -66,10 +66,7 @@ function App() {
     }));
   }, [acceleration]);
 
-  // Sync ref with state for React updates (optional, but good for hybrid use)
-  useEffect(() => {
-    // We handle cooldown logic centrally
-  }, []);
+
 
   const executeObjection = useCallback(() => {
     // 1. Play Sound (reuses same audio element, auto-stops previous)

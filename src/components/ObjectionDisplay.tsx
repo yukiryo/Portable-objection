@@ -33,25 +33,6 @@ export function ObjectionDisplay({ imageSrc, triggerShake, onShakeComplete }: Ob
         }
     }, [triggerShake, onShakeComplete]);
 
-    // If not triggered, rely on visible prop (legacy double click hide logic passed down)
-    // But wait, the legacy logic is:
-    // "double click anywhere to toggle UI"
-    // "shake triggers IMAGE visibility"
-    // The image is HIDDEN by default in legacy, only shows when shaken?
-    // Checking legacy main.js: 
-    // Line 29: img1 class="hide"
-    // objection() function (Line 451): image.classList.remove("hide"); ... setTimeout ... image.classList.add("hide");
-
-    // So yes, image is transient. 
-    // UNLESS the user selects something? No, it's a soundboard toy. You shake -> it screams & shows image -> then hides.
-
-    // Wait, I see `img1` src is set to selected voice.
-
-    // So:
-    // Default: Image invisible.
-    // Trigger: Image Visible + Shake.
-    // After 1.3s: Image invisible.
-
     return (
         <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-[110]">
             <AnimatePresence mode="popLayout">
