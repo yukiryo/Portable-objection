@@ -194,7 +194,7 @@ export function ControlPanel({
                                 checked={autoMusic}
                                 onChange={onAutoMusicChange}
                             />
-                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-red-500 peer-checked:to-orange-500"></div>
                         </label>
                     </div>
                 )}
@@ -218,7 +218,7 @@ export function ControlPanel({
 
             <div className="mt-2 text-[10px] text-center text-slate-400">
                 双击空白区域可隐藏/显示控制面板。<br />
-                Refactored by <a href="https://t.me/Yukiryo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 transition-colors font-bold">雪凌Yukiryo</a>
+                Refactored by <a href="https://t.me/Yukiryo" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:text-orange-500 transition-colors font-bold">雪凌Yukiryo</a>
                 <br />
                 <a
                     href={`https://github.com/yukiryo/Portable-objection/commit/${__COMMIT_FULL_HASH__}`}
