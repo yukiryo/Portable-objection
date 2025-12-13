@@ -1,27 +1,31 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 type CacheStatus = 'idle' | 'loading' | 'cached' | 'error';
 
 export function useAudioCache() {
     const [status, setStatus] = useState<CacheStatus>('idle');
-    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const getCacheKey = (path: string) => `cachedMP3_${path}`;
 
     const playSound = useCallback(async (path: string) => {
-        // Stop previous audio if playing
-        if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
+        // Create audio element once and reuse it
+        if (!audioRef.current) {
+            audioRef.current = new Audio();
         }
+
+        const audio = audioRef.current;
+
+        // Stop and reset if already playing
+        audio.pause();
+        audio.currentTime = 0;
 
         const cacheKey = getCacheKey(path);
         const cachedBase64 = localStorage.getItem(cacheKey);
 
         const playAudio = (src: string) => {
-            const audio = new Audio(src);
+            audio.src = src;
             audio.play().catch(e => console.error("Play failed", e));
-            setCurrentAudio(audio);
             setStatus('cached');
         };
 
@@ -45,17 +49,14 @@ export function useAudioCache() {
                     playAudio(base64data);
                 } catch (e) {
                     console.error("Storage full or error", e);
-                    // Fallback: play directly from blob or original URL if storage fails
-                    // But to be safe and 1:1, we just play what we have
                     playAudio(base64data);
-                    // Note: if storage full, next time it will fetch again.
                 }
             };
         } catch (e) {
             console.error("Fetch failed", e);
             setStatus('error');
         }
-    }, [currentAudio]);
+    }, []);
 
     const clearCache = useCallback(() => {
         const keysToRemove: string[] = [];

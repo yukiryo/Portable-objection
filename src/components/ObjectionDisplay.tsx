@@ -62,10 +62,10 @@ export function ObjectionDisplay({ imageSrc, triggerShake, onShakeComplete }: Ob
                         alt="Objection"
                         className="w-full max-w-[700px] object-contain drop-shadow-2xl"
                         variants={shakeVariants}
-                        animate="shake"
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        exit={{ scale: 1.1, opacity: 0, transition: { duration: 0.2 } }}
-                        whileInView={{ scale: 1, opacity: 1 }}
+                        animate={{ scale: 1, opacity: 1, ...shakeVariants.shake }}
+                        initial={{ scale: 0.85, opacity: 0 }}
+                        transition={{ duration: 0.08, ease: "easeOut" }}
+                        exit={{ scale: 1.1, opacity: 0, transition: { duration: 0.15 } }}
                     />
                 )}
             </AnimatePresence>
