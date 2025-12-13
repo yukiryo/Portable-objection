@@ -155,9 +155,7 @@ function App() {
       )}>
         <div className="flex items-center justify-center gap-3">
           <img src="img/badge.png" className="h-8 w-auto object-contain drop-shadow-md" alt="Badge" />
-          <h1 className="text-2xl md:text-3xl font-black tracking-[0.2em] uppercase bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
-            随身异议
-          </h1>
+          <img src="img/suishenyiyi_title.png" className="h-16 md:h-24 w-auto object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" alt="随身异议" />
         </div>
         <p className="text-[10px] tracking-widest text-slate-400 mt-1 uppercase opacity-60">Portable Objection</p>
       </div>
