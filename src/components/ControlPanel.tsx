@@ -201,6 +201,7 @@ export function ControlPanel({
 
                 {/* Embedded Music Player */}
                 <div className="mt-2">
+                    {/* @ts-ignore */}
                     <meting-js
                         server="netease"
                         type="playlist"
@@ -211,7 +212,7 @@ export function ControlPanel({
                         preload="false"
                         list-folded="true"
                         list-max-height="200px"
-                    ></meting-js>
+                    />
                 </div>
             </div>
 

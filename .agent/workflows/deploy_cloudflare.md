@@ -34,11 +34,18 @@ description: Deploy Portable Objection to Cloudflare Pages
 2.  进入 **Workers & Pages** -> **Create Application** -> **Pages** -> **Connect to Git**。
 3.  选择您的 GitHub 仓库 `portable-objection`。
 4.  **构建配置 (Build Settings)**:
-    - **Framework Preset**: 选择 `Vite`
+    - **Framework Preset**: 选择 `Vite` (Cloudflare 会自动识别，如果没有请手动选择)
     - **Build command**: `npm run build`
     - **Build output directory**: `dist`
     - **Root directory**: `/` (默认即可，留空)
-5.  点击 **Save and Deploy**。
+    
+    > **注意**: 记得在配置界面选择您刚才推送的分支（例如 `feature/ui-polish-fixes` 而不是默认的 `main`，或者先在 GitHub 将其合并到 main）。
+
+5.  **环境变量 (Environment Variables)** (建议设置):
+    - 变量名: `NODE_VERSION`
+    - 值: `20` (确保使用较新的 Node.js 版本以支持 Tailwind v4)
+
+6.  点击 **Save and Deploy**。
 
 ## 为什么选择这种方式？
 - ✅ **避开中文路径问题**: Cloudflare 的构建环境是标准的纯英文 Linux 环境，不会出现本地的 `undefined:NaN` 错误。

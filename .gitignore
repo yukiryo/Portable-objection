@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.agent/workflows/deploy_cloudflare.md
+.agent/workflows/deploy_cloudflare.md
