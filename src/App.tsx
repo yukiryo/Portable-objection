@@ -152,60 +152,63 @@ function App() {
 
   const imageSrc = `img/${selectedVoiceId}.png`;
 
-
-  // Show loading screen while preloading (MUST be after all hooks)
-  if (isLoading) {
-    return <LoadingScreen progress={preloadProgress} onEnter={handleEnterApp} />;
-  }
-
   return (
-    <div
-      className={cn(
-        "h-screen w-screen overflow-hidden relative select-none",
-        "bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-950 dark:to-black"
+    <>
+      {/* Loading Screen Overlay - renders on top while loading */}
+      {isLoading && (
+        <LoadingScreen progress={preloadProgress} onEnter={handleEnterApp} />
       )}
-      onDoubleClick={handleDoubleClick}
-    >
-      {/* Background decoration or info */}
-      <div className={cn(
-        "absolute top-8 left-0 w-full text-center pointer-events-none z-0 flex flex-col items-center justify-center",
-        "transition-all duration-500",
-        isUIHidden ? "opacity-0 -translate-y-10" : "opacity-100 translate-y-0"
-      )}>
-        <div className="flex items-center justify-center gap-3 pb-2">
-          <img src="img/badge.png" className="h-8 w-auto object-contain drop-shadow-md" alt="Badge" />
-          <img src="img/suishenyiyi_title.png" className="h-16 md:h-24 w-auto object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" alt="随身异议" />
+
+      {/* Main App Content - always rendered for preloading */}
+      <div
+        className={cn(
+          "h-screen w-screen overflow-hidden relative select-none",
+          "bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-950 dark:to-black"
+        )}
+        onDoubleClick={handleDoubleClick}
+      >
+        {/* Background decoration or info */}
+        <div className={cn(
+          "absolute top-8 left-0 w-full text-center pointer-events-none z-0 flex flex-col items-center justify-center",
+          "transition-all duration-500",
+          isUIHidden ? "opacity-0 -translate-y-10" : "opacity-100 translate-y-0"
+        )}>
+          <div className="flex items-center justify-center gap-3 pb-2">
+            <img src="img/badge.png" className="h-8 w-auto object-contain drop-shadow-md" alt="Badge" />
+            <img src="img/suishenyiyi_title.png" className="h-16 md:h-24 w-auto object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" alt="随身异议" />
+          </div>
+          <p className="text-[10px] tracking-widest text-slate-400 mt-1 uppercase opacity-60">Portable Objection</p>
         </div>
-        <p className="text-[10px] tracking-widest text-slate-400 mt-1 uppercase opacity-60">Portable Objection</p>
+
+        <ObjectionDisplay
+          imageSrc={imageSrc}
+          triggerShake={triggerCount}
+        />
+
+        <ControlPanel
+          selectedChar={selectedCharId}
+          selectedVoice={selectedVoiceId}
+          onCharChange={handleCharChange}
+          onVoiceChange={handleVoiceChange}
+          threshold={threshold}
+          onThresholdChange={handleThresholdChange}
+          onTestClick={executeObjection}
+          onClearCache={clearCache}
+          isHidden={isUIHidden}
+          permissionGranted={permissionGranted}
+          onRequestPermission={requestPermission}
+          motionData={acceleration}
+          isMouseMode={isMouseMode}
+          onToggleMouseMode={() => setIsMouseMode(prev => !prev)}
+          maxMotionData={maxAcceleration}
+          onResetMax={handleResetMax}
+          autoMusic={autoMusic}
+          onAutoMusicChange={handleAutoMusicChange}
+        />
       </div>
-
-      <ObjectionDisplay
-        imageSrc={imageSrc}
-        triggerShake={triggerCount}
-      />
-
-      <ControlPanel
-        selectedChar={selectedCharId}
-        selectedVoice={selectedVoiceId}
-        onCharChange={handleCharChange}
-        onVoiceChange={handleVoiceChange}
-        threshold={threshold}
-        onThresholdChange={handleThresholdChange}
-        onTestClick={executeObjection}
-        onClearCache={clearCache}
-        isHidden={isUIHidden}
-        permissionGranted={permissionGranted}
-        onRequestPermission={requestPermission}
-        motionData={acceleration}
-        isMouseMode={isMouseMode}
-        onToggleMouseMode={() => setIsMouseMode(prev => !prev)}
-        maxMotionData={maxAcceleration}
-        onResetMax={handleResetMax}
-        autoMusic={autoMusic}
-        onAutoMusicChange={handleAutoMusicChange}
-      />
-    </div>
+    </>
   )
 }
 
 export default App
+
