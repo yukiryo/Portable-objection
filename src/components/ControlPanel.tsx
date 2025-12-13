@@ -93,7 +93,7 @@ export function ControlPanel({
                     step="0.5"
                     value={threshold}
                     onChange={(e) => onThresholdChange(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500 relative z-10"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-500 relative z-10"
                 />
                 {/* Custom Ticks */}
                 <div className="flex justify-between w-full px-[2px] -mt-1 mb-1">
@@ -129,7 +129,7 @@ export function ControlPanel({
                     whileTap={{ scale: 0.98 }}
                     whileHover={{ scale: 1.02 }}
                     onClick={onTestClick}
-                    className="h-14 flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-black shadow-lg shadow-blue-500/30 text-lg tracking-widest flex items-center justify-center gap-2"
+                    className="h-14 flex-1 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white rounded-xl font-black shadow-lg shadow-red-500/30 text-lg tracking-widest flex items-center justify-center gap-2"
                 >
                     <span>👉</span> 点击测试
                 </motion.button>
@@ -174,7 +174,7 @@ export function ControlPanel({
                             </button>
                         )}
                         {!permissionGranted && (
-                            <button onClick={onRequestPermission} className="text-blue-500 underline decoration-dashed">
+                            <button onClick={onRequestPermission} className="text-red-500 underline decoration-dashed">
                                 iOS授权
                             </button>
                         )}
