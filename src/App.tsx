@@ -209,6 +209,8 @@ function App() {
           onResetMax={handleResetMax}
           autoMusic={autoMusic}
           onAutoMusicChange={handleAutoMusicChange}
+          isIOS={isIOS}
+          permissionGranted={permissionGranted}
         />
       </div>
     </>

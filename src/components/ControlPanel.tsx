@@ -21,6 +21,8 @@ interface ControlPanelProps {
     onResetMax?: () => void;
     autoMusic?: boolean;
     onAutoMusicChange?: () => void;
+    isIOS?: boolean;
+    permissionGranted?: boolean;
 }
 
 export function ControlPanel({
@@ -39,7 +41,9 @@ export function ControlPanel({
     maxMotionData,
     onResetMax,
     autoMusic,
-    onAutoMusicChange
+    onAutoMusicChange,
+    isIOS = false,
+    permissionGranted = true
 }: ControlPanelProps) {
 
     const activeChar = CHARACTERS.find(c => c.id === selectedChar) || CHARACTERS[0];
@@ -153,26 +157,34 @@ export function ControlPanel({
             <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-100 dark:border-slate-800">
                 {/* Sensor Data */}
                 <div className="flex justify-between items-center text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                    <div className="space-y-1">
-                        <div>G-Force: {motionData.x.toFixed(2)}, {motionData.y.toFixed(2)}, {motionData.z.toFixed(2)}</div>
-                        {maxMotionData && (
-                            <div className="text-slate-400">
-                                Max-G: {maxMotionData.x.toFixed(2)}, {maxMotionData.y.toFixed(2)}, {maxMotionData.z.toFixed(2)}
-                            </div>
-                        )}
-                    </div>
+                    {isIOS && !permissionGranted ? (
+                        <div className="text-red-500 font-bold">
+                            点击上方测试开始
+                        </div>
+                    ) : (
+                        <div className="space-y-1">
+                            <div>G-Force: {motionData.x.toFixed(2)}, {motionData.y.toFixed(2)}, {motionData.z.toFixed(2)}</div>
+                            {maxMotionData && (
+                                <div className="text-slate-400">
+                                    Max-G: {maxMotionData.x.toFixed(2)}, {maxMotionData.y.toFixed(2)}, {maxMotionData.z.toFixed(2)}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                    {/* Reset & Perms */}
-                    <div className="flex flex-col items-end gap-1">
-                        {onResetMax && maxMotionData && (
-                            <button
-                                onClick={onResetMax}
-                                className="px-2 py-0.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 rounded text-[10px] transition-colors"
-                            >
-                                重置Max
-                            </button>
-                        )}
-                    </div>
+                    {/* Reset Max (only show when authorized) */}
+                    {(!isIOS || permissionGranted) && (
+                        <div className="flex flex-col items-end gap-1">
+                            {onResetMax && maxMotionData && (
+                                <button
+                                    onClick={onResetMax}
+                                    className="px-2 py-0.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 rounded text-[10px] transition-colors"
+                                >
+                                    重置Max
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Auto Music Toggle */}
