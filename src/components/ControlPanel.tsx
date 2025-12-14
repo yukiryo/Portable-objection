@@ -14,8 +14,6 @@ interface ControlPanelProps {
     onTestClick: () => void;
     onClearCache: () => void;
     isHidden: boolean;
-    permissionGranted: boolean;
-    onRequestPermission: () => void;
     onToggleMouseMode?: () => void;
     isMouseMode?: boolean;
     motionData: { x: number, y: number, z: number };
@@ -35,8 +33,6 @@ export function ControlPanel({
     onTestClick,
     onClearCache,
     isHidden,
-    permissionGranted,
-    onRequestPermission,
     motionData,
     onToggleMouseMode,
     isMouseMode = false,
@@ -173,11 +169,6 @@ export function ControlPanel({
                                 重置Max
                             </button>
                         )}
-                        {!permissionGranted && (
-                            <button onClick={onRequestPermission} className="text-red-500 underline decoration-dashed">
-                                iOS授权
-                            </button>
-                        )}
                     </div>
                 </div>
 
@@ -229,7 +220,18 @@ export function ControlPanel({
                     {__COMMIT_HASH__}
                 </a>
                 {' · '}
-                {new Date(__COMMIT_DATE__).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}
+                {(() => {
+                    try {
+                        // Convert git date format to ISO format for Safari compatibility
+                        // Git format: "2024-12-14 12:30:00 +0800"
+                        // iOS Safari requires: "2024-12-14T12:30:00+08:00"
+                        const dateStr = __COMMIT_DATE__.replace(' ', 'T').replace(' ', '');
+                        const date = new Date(dateStr);
+                        return isNaN(date.getTime()) ? __COMMIT_DATE__ : date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+                    } catch {
+                        return __COMMIT_DATE__;
+                    }
+                })()}
             </div>
 
         </div>

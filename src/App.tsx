@@ -188,8 +188,6 @@ function App() {
           onTestClick={handleTestClick}
           onClearCache={clearCache}
           isHidden={isUIHidden}
-          permissionGranted={permissionGranted}
-          onRequestPermission={requestPermission}
           motionData={acceleration}
           isMouseMode={isMouseMode}
           onToggleMouseMode={() => setIsMouseMode(prev => !prev)}
