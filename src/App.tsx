@@ -5,7 +5,6 @@ import { useAudioCache } from './hooks/useAudioCache';
 import { useDeviceMotion } from './hooks/useDeviceMotion';
 import { ControlPanel } from './components/ControlPanel';
 import { ObjectionDisplay } from './components/ObjectionDisplay';
-import { LoadingScreen } from './components/LoadingScreen';
 
 function App() {
   // --- State ---
@@ -15,25 +14,14 @@ function App() {
   const [isUIHidden, setIsUIHidden] = useState(false);
   const [isMouseMode, setIsMouseMode] = useState(false);
   const cooldownRef = useRef(false); // Ref for synchronous access in event listeners
-  const [isLoading, setIsLoading] = useState(true);
 
   const [triggerCount, setTriggerCount] = useState(0);
   const [maxAcceleration, setMaxAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [autoMusic, setAutoMusic] = useState(() => localStorage.getItem('igiari_autom') === 'true');
 
   // --- Hooks ---
-  const { playSound, clearCache, preloadAll, preloadProgress } = useAudioCache();
+  const { playSound, clearCache } = useAudioCache();
   const { isShaking, acceleration, requestPermission, permissionGranted } = useDeviceMotion(threshold);
-
-  // Preload all audio files on app start (will skip AudioContext decode until user clicks)
-  useEffect(() => {
-    preloadAll().catch(e => console.warn("Preload incomplete:", e));
-  }, [preloadAll]);
-
-  // Handle user click to enter app (this provides the user gesture for AudioContext)
-  const handleEnterApp = useCallback(() => {
-    setIsLoading(false);
-  }, []);
 
 
   // --- Logic ---
@@ -154,12 +142,7 @@ function App() {
 
   return (
     <>
-      {/* Loading Screen Overlay - renders on top while loading */}
-      {isLoading && (
-        <LoadingScreen progress={preloadProgress} onEnter={handleEnterApp} />
-      )}
-
-      {/* Main App Content - always rendered for preloading */}
+      {/* Main App Content */}
       <div
         className={cn(
           "h-screen w-screen overflow-hidden relative select-none",
