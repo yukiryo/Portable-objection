@@ -13,7 +13,6 @@ function App() {
   const [threshold, setThreshold] = useState(() => parseFloat(localStorage.getItem('igiari_lmd') || '5'));
   const [isUIHidden, setIsUIHidden] = useState(false);
   const [isMouseMode, setIsMouseMode] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(false); // Require test click to enable
   const cooldownRef = useRef(false); // Ref for synchronous access in event listeners
 
   const [triggerCount, setTriggerCount] = useState(0);
@@ -100,19 +99,16 @@ function App() {
     if (isIOS && !permissionGranted) {
       requestPermission();
     }
-    // Enable shake/mouse trigger after first test click
-    if (!isEnabled) {
-      setIsEnabled(true);
-    }
     // Execute objection regardless
     executeObjection();
-  }, [isIOS, permissionGranted, requestPermission, executeObjection, isEnabled]);
+  }, [isIOS, permissionGranted, requestPermission, executeObjection]);
 
 
-  // Motion Trigger (only after test click, with delay like legacy)
+  // Motion Trigger (iOS requires permission first, non-iOS works immediately)
   const shakeCooldownRef = useRef(false);
   useEffect(() => {
-    if (!isEnabled) return; // Require test click first
+    // On iOS, require permission granted first (via test click)
+    if (isIOS && !permissionGranted) return;
     if (shakeCooldownRef.current) return; // Cooldown active
     if (isShaking) {
       shakeCooldownRef.current = true;
@@ -120,11 +116,13 @@ function App() {
       // Reset cooldown after animation completes (same as legacy ~1.3s)
       setTimeout(() => { shakeCooldownRef.current = false; }, 1300);
     }
-  }, [isShaking, executeObjection, isEnabled]);
+  }, [isShaking, executeObjection, isIOS, permissionGranted]);
 
-  // Mouse Trigger (with delay like legacy, only after test click)
+  // Mouse Trigger (with delay like legacy)
   useEffect(() => {
-    if (!isMouseMode || !isEnabled) return; // Require test click first
+    if (!isMouseMode) return;
+    // On iOS, require permission granted first (via test click)
+    if (isIOS && !permissionGranted) return;
 
     let mouseCooldown = false;
 
@@ -138,7 +136,7 @@ function App() {
 
     document.body.addEventListener('mousemove', handleMouseMove);
     return () => document.body.removeEventListener('mousemove', handleMouseMove);
-  }, [isMouseMode, executeObjection, isEnabled]);
+  }, [isMouseMode, executeObjection, isIOS, permissionGranted]);
 
   // Double click to toggle UI
   const handleDoubleClick = () => {
