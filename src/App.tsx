@@ -13,6 +13,7 @@ function App() {
   const [threshold, setThreshold] = useState(() => parseFloat(localStorage.getItem('igiari_lmd') || '5'));
   const [isUIHidden, setIsUIHidden] = useState(false);
   const [isMouseMode, setIsMouseMode] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false); // Require test click to enable
   const cooldownRef = useRef(false); // Ref for synchronous access in event listeners
 
   const [triggerCount, setTriggerCount] = useState(0);
@@ -99,22 +100,26 @@ function App() {
     if (isIOS && !permissionGranted) {
       requestPermission();
     }
+    // Enable shake/mouse trigger after first test click
+    if (!isEnabled) {
+      setIsEnabled(true);
+    }
     // Execute objection regardless
     executeObjection();
-  }, [isIOS, permissionGranted, requestPermission, executeObjection]);
+  }, [isIOS, permissionGranted, requestPermission, executeObjection, isEnabled]);
 
 
-  // Motion Trigger
+  // Motion Trigger (only after test click)
   useEffect(() => {
-    // The executeObjection now handles the check, so we just call it
+    if (!isEnabled) return; // Require test click first
     if (isShaking) {
       executeObjection();
     }
-  }, [isShaking, executeObjection]);
+  }, [isShaking, executeObjection, isEnabled]);
 
-  // Mouse Trigger (with delay like legacy)
+  // Mouse Trigger (with delay like legacy, only after test click)
   useEffect(() => {
-    if (!isMouseMode) return;
+    if (!isMouseMode || !isEnabled) return; // Require test click first
 
     let mouseCooldown = false;
 
@@ -128,7 +133,7 @@ function App() {
 
     document.body.addEventListener('mousemove', handleMouseMove);
     return () => document.body.removeEventListener('mousemove', handleMouseMove);
-  }, [isMouseMode, executeObjection]);
+  }, [isMouseMode, executeObjection, isEnabled]);
 
   // Double click to toggle UI
   const handleDoubleClick = () => {
