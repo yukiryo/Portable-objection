@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 
 import { CHARACTERS, VOICES } from "../data";
 import { cn } from "../lib/utils";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 interface ControlPanelProps {
     selectedChar: string;
@@ -48,6 +49,8 @@ export function ControlPanel({
 
     const activeChar = CHARACTERS.find(c => c.id === selectedChar) || CHARACTERS[0];
     const validVoices = activeChar.validVoices;
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [showClearSuccess, setShowClearSuccess] = useState(false);
 
     return (
         <div className={cn(
@@ -140,12 +143,7 @@ export function ControlPanel({
                 {/* Clear Cache (Small, right) */}
                 <motion.button
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => {
-                        if (window.confirm("确定要清空音频缓存吗？清空后需要重新加载音频")) {
-                            onClearCache();
-                            alert("清空完成！");
-                        }
-                    }}
+                    onClick={() => setShowClearConfirm(true)}
                     className="h-14 w-14 bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl transition-colors border border-slate-200 flex items-center justify-center"
                     title="清空缓存"
                 >
@@ -249,6 +247,31 @@ export function ControlPanel({
                 })()}
             </div>
 
+            {/* Clear Cache Confirm Dialog */}
+            <ConfirmDialog
+                isOpen={showClearConfirm}
+                title="清空缓存"
+                message="确定要清空音频缓存吗？清空后需要重新加载音频"
+                confirmText="确定清空"
+                cancelText="取消"
+                onConfirm={() => {
+                    setShowClearConfirm(false);
+                    onClearCache();
+                    setShowClearSuccess(true);
+                }}
+                onCancel={() => setShowClearConfirm(false)}
+            />
+
+            {/* Clear Success Dialog */}
+            <ConfirmDialog
+                isOpen={showClearSuccess}
+                title="完成"
+                message="音频缓存已清空！"
+                confirmText="好的"
+                cancelText=""
+                onConfirm={() => setShowClearSuccess(false)}
+                onCancel={() => setShowClearSuccess(false)}
+            />
         </div>
     );
 }
