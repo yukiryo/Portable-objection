@@ -17,12 +17,13 @@ const getGitInfo = () => {
 const gitInfo = getGitInfo();
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   define: {
     __COMMIT_HASH__: JSON.stringify(gitInfo.commitHash),
     __COMMIT_FULL_HASH__: JSON.stringify(gitInfo.commitFullHash),
     __COMMIT_DATE__: JSON.stringify(gitInfo.commitDate),
+    __DEV_MODE__: mode === 'development',
   },
-})
+}))
 

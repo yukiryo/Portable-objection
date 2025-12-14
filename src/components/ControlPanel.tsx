@@ -223,7 +223,7 @@ export function ControlPanel({
                     {__COMMIT_HASH__}
                 </a>
                 {' · '}
-                {(() => {
+                {__DEV_MODE__ ? '开发中' : (() => {
                     try {
                         // Convert git date format to ISO format for Safari compatibility
                         // Git format: "2024-12-14 12:30:00 +0800"

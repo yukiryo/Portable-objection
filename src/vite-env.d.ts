@@ -6,6 +6,7 @@ declare global {
     const __COMMIT_HASH__: string;
     const __COMMIT_FULL_HASH__: string;
     const __COMMIT_DATE__: string;
+    const __DEV_MODE__: boolean;
 
     namespace JSX {
         interface IntrinsicElements {
