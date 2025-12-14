@@ -109,11 +109,16 @@ function App() {
   }, [isIOS, permissionGranted, requestPermission, executeObjection, isEnabled]);
 
 
-  // Motion Trigger (only after test click)
+  // Motion Trigger (only after test click, with delay like legacy)
+  const shakeCooldownRef = useRef(false);
   useEffect(() => {
     if (!isEnabled) return; // Require test click first
+    if (shakeCooldownRef.current) return; // Cooldown active
     if (isShaking) {
+      shakeCooldownRef.current = true;
       executeObjection();
+      // Reset cooldown after animation completes (same as legacy ~1.3s)
+      setTimeout(() => { shakeCooldownRef.current = false; }, 1300);
     }
   }, [isShaking, executeObjection, isEnabled]);
 
