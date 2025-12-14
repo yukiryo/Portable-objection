@@ -112,12 +112,18 @@ function App() {
     }
   }, [isShaking, executeObjection]);
 
-  // Mouse Trigger
+  // Mouse Trigger (with delay like legacy)
   useEffect(() => {
     if (!isMouseMode) return;
 
+    let mouseCooldown = false;
+
     const handleMouseMove = () => {
+      if (mouseCooldown) return;
+      mouseCooldown = true;
       executeObjection();
+      // Reset cooldown after animation completes (same as legacy ~1.3s)
+      setTimeout(() => { mouseCooldown = false; }, 1300);
     };
 
     document.body.addEventListener('mousemove', handleMouseMove);

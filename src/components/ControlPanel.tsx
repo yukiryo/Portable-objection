@@ -89,7 +89,10 @@ export function ControlPanel({
                     step="0.5"
                     value={threshold}
                     onChange={(e) => onThresholdChange(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-500 relative z-10"
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-red-500 relative z-10"
+                    style={{
+                        background: `linear-gradient(to right, #ef4444 0%, #f97316 ${((threshold - 1) / 39) * 100}%, #e2e8f0 ${((threshold - 1) / 39) * 100}%, #e2e8f0 100%)`
+                    }}
                 />
                 {/* Custom Ticks */}
                 <div className="flex justify-between w-full px-[2px] -mt-1 mb-1">
