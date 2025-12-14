@@ -1,132 +1,114 @@
 import { useState, useCallback, useRef } from 'react';
-import { CHARACTERS } from '../data';
 
-type CacheStatus = 'idle' | 'loading' | 'cached' | 'error';
+// Global audio element (reused for all playback)
+const globalAudio = new Audio();
+globalAudio.preload = 'auto';
 
-// Global AudioContext (created once, reused)
-let audioContext: AudioContext | null = null;
-
-// In-memory cache for decoded AudioBuffers
-const audioBufferCache = new Map<string, AudioBuffer>();
+// LocalStorage key prefix
+const CACHE_PREFIX = 'cachedMP3_';
 
 export function useAudioCache() {
-    const [status, setStatus] = useState<CacheStatus>('idle');
-    const [preloadProgress, setPreloadProgress] = useState<number>(0);
-    const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
+    const [status, setStatus] = useState<'idle' | 'loading' | 'cached' | 'error'>('idle');
+    const isPlayingRef = useRef(false);
 
-    // Initialize AudioContext on first user interaction (required by browsers)
-    const getAudioContext = useCallback(() => {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        }
-        // Resume if suspended (browsers require user gesture)
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-        return audioContext;
+    // Check if a file is cached in localStorage
+    const isCached = useCallback((path: string): boolean => {
+        const key = `${CACHE_PREFIX}${path}`;
+        return localStorage.getItem(key) !== null;
     }, []);
 
-    // Fetch and decode a single audio file
-    const fetchAndDecode = useCallback(async (path: string): Promise<AudioBuffer | null> => {
+    // Download and cache MP3 to localStorage as base64
+    const downloadAndCache = useCallback(async (path: string): Promise<string | null> => {
         try {
+            setStatus('loading');
             const response = await fetch(path);
-            const arrayBuffer = await response.arrayBuffer();
-            const ctx = getAudioContext();
-            const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-            return audioBuffer;
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const blob = await response.blob();
+
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64data = reader.result as string;
+                    const key = `${CACHE_PREFIX}${path}`;
+                    try {
+                        localStorage.setItem(key, base64data);
+                        console.log(`${path} cached successfully.`);
+                        setStatus('cached');
+                        resolve(base64data);
+                    } catch (e) {
+                        // localStorage might be full
+                        console.warn('localStorage full, playing without cache:', e);
+                        setStatus('cached');
+                        resolve(base64data);
+                    }
+                };
+                reader.onerror = () => {
+                    reject(new Error('Failed to read blob as base64'));
+                };
+                reader.readAsDataURL(blob);
+            });
         } catch (e) {
-            console.error(`Failed to fetch/decode ${path}`, e);
+            console.error(`Failed to fetch/cache ${path}`, e);
+            setStatus('error');
             return null;
         }
-    }, [getAudioContext]);
+    }, []);
 
+    // Play sound - uses cached version if available
     const playSound = useCallback(async (path: string) => {
-        const ctx = getAudioContext();
-
-        // Stop previous sound if playing
-        if (currentSourceRef.current) {
-            try {
-                currentSourceRef.current.stop();
-            } catch (e) {
-                // Ignore if already stopped
-            }
-            currentSourceRef.current = null;
+        // Stop any currently playing audio
+        if (isPlayingRef.current) {
+            globalAudio.pause();
+            globalAudio.currentTime = 0;
         }
 
-        // Check in-memory cache first
-        let buffer = audioBufferCache.get(path);
+        const key = `${CACHE_PREFIX}${path}`;
+        let base64Data = localStorage.getItem(key);
 
-        if (!buffer) {
-            // Not in memory, fetch and decode
-            setStatus('loading');
-            const decoded = await fetchAndDecode(path);
-            if (decoded) {
-                audioBufferCache.set(path, decoded);
-                buffer = decoded;
-            }
-        }
-
-        if (buffer) {
-            // Create source and play immediately
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(ctx.destination);
-            source.start(0);
-            currentSourceRef.current = source;
+        if (base64Data) {
+            // Cached - play immediately
+            globalAudio.src = base64Data;
+            globalAudio.play().catch(console.warn);
+            isPlayingRef.current = true;
             setStatus('cached');
         } else {
-            setStatus('error');
+            // Not cached - download, cache, and play
+            const data = await downloadAndCache(path);
+            if (data) {
+                globalAudio.src = data;
+                globalAudio.play().catch(console.warn);
+                isPlayingRef.current = true;
+            }
         }
-    }, [getAudioContext, fetchAndDecode]);
+    }, [downloadAndCache]);
 
+    // Clear all audio cache from localStorage
     const clearCache = useCallback(() => {
-        audioBufferCache.clear();
+        const keysToRemove: string[] = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith(CACHE_PREFIX)) {
+                keysToRemove.push(key);
+            }
+        }
+
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+        });
+
+        console.log('音频缓存已清空');
         setStatus('idle');
     }, []);
 
-    const isCached = useCallback((path: string) => {
-        return audioBufferCache.has(path);
-    }, []);
+    // Audio ended event
+    globalAudio.onended = () => {
+        isPlayingRef.current = false;
+    };
 
-    // Preload all audio files for all characters into memory
-    const preloadAll = useCallback(async () => {
-        // Collect all unique audio paths
-        const allPaths: string[] = [];
-        for (const char of CHARACTERS) {
-            for (const voiceId of char.validVoices) {
-                const path = `sound/${char.id}/${voiceId}.mp3`;
-                if (!allPaths.includes(path)) {
-                    allPaths.push(path);
-                }
-            }
-        }
-
-        // Filter out already cached in memory
-        const uncachedPaths = allPaths.filter(p => !audioBufferCache.has(p));
-
-        if (uncachedPaths.length === 0) {
-            setPreloadProgress(100);
-            return;
-        }
-
-        // Initialize audio context
-        getAudioContext();
-
-        let loaded = 0;
-        // Use Promise.all for parallel loading (faster)
-        const batchSize = 5; // Load 5 files at a time
-        for (let i = 0; i < uncachedPaths.length; i += batchSize) {
-            const batch = uncachedPaths.slice(i, i + batchSize);
-            await Promise.all(batch.map(async (path) => {
-                const buffer = await fetchAndDecode(path);
-                if (buffer) {
-                    audioBufferCache.set(path, buffer);
-                }
-                loaded++;
-                setPreloadProgress(Math.round((loaded / uncachedPaths.length) * 100));
-            }));
-        }
-    }, [getAudioContext, fetchAndDecode]);
-
-    return { playSound, clearCache, status, isCached, preloadAll, preloadProgress };
+    return { playSound, clearCache, status, isCached };
 }

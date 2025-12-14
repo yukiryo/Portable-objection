@@ -31,3 +31,4 @@ dist-ssr
 # Project specific ignores
 .agent/
 legacy_backup/
+
