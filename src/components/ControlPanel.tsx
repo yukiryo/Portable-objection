@@ -158,7 +158,7 @@ export function ControlPanel({
                 {/* Sensor Data */}
                 <div className="flex justify-between items-center text-[10px] font-mono text-slate-500 dark:text-slate-400">
                     {isIOS && !permissionGranted ? (
-                        <div className="text-red-500 font-bold">
+                        <div className="text-red-500 font-bold text-center w-full">
                             点击上方测试开始
                         </div>
                     ) : (
