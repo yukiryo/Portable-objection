@@ -153,7 +153,7 @@ export function ControlPanel({
             {/* 4. Bottom Info Panel (Status) */}
             <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-100 dark:border-slate-800">
                 {/* Sensor Data */}
-                <div className="flex justify-between items-start text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                <div className="flex justify-between items-center text-[10px] font-mono text-slate-500 dark:text-slate-400">
                     <div className="space-y-1">
                         <div>G-Force: {motionData.x.toFixed(2)}, {motionData.y.toFixed(2)}, {motionData.z.toFixed(2)}</div>
                         {maxMotionData && (
@@ -217,7 +217,7 @@ export function ControlPanel({
             </div>
 
             <div className="mt-2 text-[10px] text-center text-slate-400">
-                双击空白区域可隐藏/显示控制面板。<br />
+                点击测试开始。双击空白区域可隐藏/显示控制面板。<br />
                 Refactored by <a href="https://t.me/Yukiryo" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:text-orange-500 transition-colors font-bold">雪凌Yukiryo</a>
                 <br />
                 <a

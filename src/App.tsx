@@ -21,8 +21,7 @@ function App() {
 
   // --- Hooks ---
   const { playSound, clearCache } = useAudioCache();
-  const { isShaking, acceleration, requestPermission, permissionGranted } = useDeviceMotion(threshold);
-
+  const { isShaking, acceleration, requestPermission, permissionGranted, isIOS } = useDeviceMotion(threshold);
 
   // --- Logic ---
   const handleCharChange = (id: string) => {
@@ -93,6 +92,17 @@ function App() {
       }, 800);
     }
   }, [selectedCharId, selectedVoiceId, playSound, autoMusic]);
+
+  // Handle test button click - request iOS permission first if needed
+  const handleTestClick = useCallback(() => {
+    // On iOS, request permission first, then execute
+    if (isIOS && !permissionGranted) {
+      requestPermission();
+    }
+    // Execute objection regardless
+    executeObjection();
+  }, [isIOS, permissionGranted, requestPermission, executeObjection]);
+
 
   // Motion Trigger
   useEffect(() => {
@@ -175,7 +185,7 @@ function App() {
           onVoiceChange={handleVoiceChange}
           threshold={threshold}
           onThresholdChange={handleThresholdChange}
-          onTestClick={executeObjection}
+          onTestClick={handleTestClick}
           onClearCache={clearCache}
           isHidden={isUIHidden}
           permissionGranted={permissionGranted}

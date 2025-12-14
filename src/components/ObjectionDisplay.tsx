@@ -53,3 +53,4 @@ export function ObjectionDisplay({ imageSrc, triggerShake, onShakeComplete }: Ob
         </div>
     );
 }
+
