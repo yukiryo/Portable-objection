@@ -223,7 +223,7 @@ export function ControlPanel({
             </div>
 
             <div className="mt-2 text-[10px] text-center text-slate-400">
-                点击测试开始。双击空白区域可隐藏/显示控制面板。<br />
+                使用前点击测试以正常播放音频  双击空白区域可隐藏/显示控制面板<br />
                 Refactored by <a href="https://t.me/Yukiryo" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:text-orange-500 transition-colors font-bold">雪凌Yukiryo</a>
                 <br />
                 <a
