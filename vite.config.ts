@@ -9,7 +9,7 @@ const getGitInfo = () => {
     const commitFullHash = execSync('git rev-parse HEAD').toString().trim();
     const commitDate = execSync('git log -1 --format=%ci').toString().trim();
     return { commitHash, commitFullHash, commitDate };
-  } catch (e) {
+  } catch {
     return { commitHash: 'dev', commitFullHash: 'dev', commitDate: new Date().toISOString() };
   }
 };

@@ -36,7 +36,7 @@ export function useAudioCache() {
                     const key = `${CACHE_PREFIX}${path}`;
                     try {
                         localStorage.setItem(key, base64data);
-                        console.log(`${path} cached successfully.`);
+
                         setStatus('cached');
                         resolve(base64data);
                     } catch (e) {
@@ -101,7 +101,7 @@ export function useAudioCache() {
             localStorage.removeItem(key);
         });
 
-        console.log('音频缓存已清空');
+
         setStatus('idle');
     }, []);
 

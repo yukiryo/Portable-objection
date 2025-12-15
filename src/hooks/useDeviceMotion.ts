@@ -56,7 +56,6 @@ export function useDeviceMotion(threshold: number = 15) {
     // For non-iOS devices, start listening immediately on mount
     useEffect(() => {
         if (!isIOSDevice()) {
-            setPermissionGranted(true);
             if (!listenerAddedRef.current) {
                 window.addEventListener('devicemotion', handleMotion);
                 listenerAddedRef.current = true;

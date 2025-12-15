@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from './lib/utils';
-import { CHARACTERS } from './data';
+import { CHARACTERS } from './constants/gameData';
 import { useAudioCache } from './hooks/useAudioCache';
 import { useDeviceMotion } from './hooks/useDeviceMotion';
 import { ControlPanel } from './components/ControlPanel';
