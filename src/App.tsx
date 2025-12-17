@@ -3,6 +3,7 @@ import { cn } from './lib/utils';
 import { CHARACTERS } from './constants/gameData';
 import { useAudioCache } from './hooks/useAudioCache';
 import { useDeviceMotion } from './hooks/useDeviceMotion';
+import { useResourcePreloader } from './hooks/useResourcePreloader';
 import { ControlPanel } from './components/ControlPanel';
 import { ObjectionDisplay } from './components/ObjectionDisplay';
 
@@ -22,6 +23,9 @@ function App() {
   // --- Hooks ---
   const { playSound, clearCache } = useAudioCache();
   const { isShaking, acceleration, requestPermission, permissionGranted, isIOS } = useDeviceMotion(threshold);
+
+  // Preload all audio and images in background on mount
+  useResourcePreloader();
 
   // --- Logic ---
   const handleCharChange = (id: string) => {
